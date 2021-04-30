@@ -7,9 +7,9 @@ namespace Dz1
     class ImgFile : File
     {
         public string Resolution { get; set; }
-        public ImgFile(string Name, string Extension, FileSize Size, string Resolution) : base(Name, Extension, Size)
+        public ImgFile(string name, string extension, FileSize size, string resolution) : base(name, extension, size)
         {
-            this.Resolution = Resolution;
+            this.Resolution = resolution;
         }
         public override string ToString()
         {

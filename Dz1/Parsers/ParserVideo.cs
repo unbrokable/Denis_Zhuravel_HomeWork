@@ -10,12 +10,12 @@ namespace Dz1
         public VideoFile Parse(string line)
         {
             var description = line.Substring(line.IndexOf(':') + 1).Split(';').Select(i => i.Trim()).ToList();
-            string Name = description[0].Split('(', StringSplitOptions.RemoveEmptyEntries)[0];
-            string Extension = Name.Split('.', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-            FileSize Size = new ParserFileSize().Parse(description[0].Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries)[1]);
-            string Resolution = description[1];
-            string Length = description.LastOrDefault();
-            return new VideoFile(Name, Extension, Size, Resolution, Length);
+            string name = description[0].Split('(', StringSplitOptions.RemoveEmptyEntries)[0];
+            string extension = name.Split('.', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+            FileSize size = new ParserFileSize().Parse(description[0].Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries)[1]);
+            string resolution = description[1];
+            string length = description.LastOrDefault();
+            return new VideoFile(name, extension, size, resolution, length);
         }
     }
 }

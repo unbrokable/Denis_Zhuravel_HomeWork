@@ -9,24 +9,38 @@ namespace Dz1
     {
         Text, Movie, Image 
     }
-    abstract class File:IComparable<File>
+    class ComparerFileBySize : Comparer<File>
+    {
+        public override int Compare([AllowNull] File x, [AllowNull] File y)
+        {
+            if (x == null && y == null)
+            {
+                return 0;
+            }
+            else if (x == null)
+            {
+                return -1;
+            }
+            else if (y == null)
+            {
+                return 1;
+            }
+            return x.Size.CompareTo(y.Size);
+        }
+    }
+    abstract class File
     {
         public string Name { get; set; }
         public string Extension { get; set; }
         public FileSize Size { get; set; }
 
-        public File( string Name, string Extension, FileSize Size)
+        public File( string name, string extension, FileSize size)
         {
-            this.Extension = Extension;
-            this.Size = Size;
-            this.Name = Name;
+            this.Extension = extension;
+            this.Size = size;
+            this.Name = name;
         } 
-        public int CompareTo([AllowNull] File other)
-        {
-            if (other == null) return 1;
 
-            return Size.CompareTo(other.Size);
-        }
         public override string ToString()
         {
             return $"{nameof(Name)}:{Name}\n\t{nameof(Extension)}:{Extension}\n\t{nameof(Size)}:{Size}\n";

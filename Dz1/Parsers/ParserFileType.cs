@@ -12,8 +12,8 @@ namespace Dz1
             
             string copy = content;
             FileSizeType type = (FileSizeType)Enum.Parse(typeof(FileSizeType), Regex.Replace(copy, "[0-9]",String.Empty)) ;
-            int Length = Convert.ToInt32(Regex.Replace(copy, "[A-Za-z]", String.Empty).Trim());
-            return new FileSize(type,Length);
+            int length = Convert.ToInt32(Regex.Replace(copy, "[A-Za-z]", String.Empty).Trim());
+            return new FileSize(type,length);
         }
     }
 }

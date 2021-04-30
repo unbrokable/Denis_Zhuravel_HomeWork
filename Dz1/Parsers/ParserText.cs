@@ -9,11 +9,11 @@ namespace Dz1
         public TextFile Parse(string line)
         {
             var description = line.Substring(line.IndexOf(':') + 1).Split(';').Select(i => i.Trim()).ToList();
-            string Name = description[0].Split('(', StringSplitOptions.RemoveEmptyEntries)[0];
-            string Extension = Name.Split('.', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-            FileSize Size = new ParserFileSize().Parse(description[0].Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries)[1]);
-            string Content = description.LastOrDefault();
-            return new TextFile(Name, Extension, Size, Content);
+            string name = description[0].Split('(', StringSplitOptions.RemoveEmptyEntries)[0];
+            string extension = name.Split('.', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+            FileSize size = new ParserFileSize().Parse(description[0].Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries)[1]);
+            string content = description.LastOrDefault();
+            return new TextFile(name, extension, size, content);
         }
     }
 }

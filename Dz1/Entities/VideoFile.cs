@@ -8,14 +8,14 @@ namespace Dz1
     {
         public string Resolution { get; set; }
         public string Length { get; set; }
-        public VideoFile(string Name, string Extension, FileSize Size, string Resolution, string Length) : base(Name, Extension, Size)
+        public VideoFile(string name, string extension, FileSize size, string resolution, string length) : base(name, extension, size)
         {
-            this.Resolution = Resolution;
-            this.Length = Length;
+            this.Resolution = resolution;
+            this.Length = length;
         }
         public override string ToString()
         {
-            return base.ToString() + $"\t{nameof(Length)}:{Length}\n";
+            return base.ToString() + $"\t{nameof(Length)}:{Length}\n\t{nameof(Resolution)}:{Resolution}\n";
         }
     }
 }

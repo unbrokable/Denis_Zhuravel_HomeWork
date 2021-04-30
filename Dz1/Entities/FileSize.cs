@@ -7,17 +7,18 @@ namespace Dz1
 {  
     
     enum FileSizeType {
-            B, MB, GB
+            B = 1, MB = 1024, GB = 1048576
     }
+ 
     class FileSize:IComparable<FileSize>
     {
         public FileSizeType Type { get; set; }
         public int Length { get; set; }
         
-        public FileSize(FileSizeType type, int Length)
+        public FileSize(FileSizeType type, int length)
         {
             this.Type = type;
-            this.Length = Length;
+            this.Length = length;
         }
         
         public override string ToString()
@@ -29,11 +30,12 @@ namespace Dz1
         {
 
             if (other == null) return 1;
-            double convertToBCur = Math.Pow(1024, (int)(Type - FileSizeType.B));
-            double convertToBOther = Math.Pow(1024, (int)(other.Type - FileSizeType.B));
+            int amountOfBytesThis = CountBytes(Type ,Length);
+            int amountOfBytesOther = CountBytes(other.Type, other.Length);
 
-            return (Length * (convertToBCur == 0 ? 1: convertToBCur) ).CompareTo(other.Length * (convertToBOther== 0 ? 1 : convertToBOther) );
+            return (amountOfBytesThis).CompareTo(amountOfBytesOther);
 
+            int CountBytes(FileSizeType type, int length) => Convert.ToInt32(type) * length; 
         }
     }
 }
