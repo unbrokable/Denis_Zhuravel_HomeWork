@@ -10,9 +10,10 @@ namespace DI.App
         private static void Main()
         {
             // Inversion of Control
-
-            var addUsers = new AddUserCommand(new UserStore(new InMemoryDatabaseService()));
-            var listUsers = new ListUsersCommand(new UserStore(new InMemoryDatabaseService()));
+            var database = new InMemoryDatabaseService();
+            var shop = new UserStore(database);
+            var addUsers = new AddUserCommand(shop);
+            var listUsers = new ListUsersCommand(shop);
             ICommandProcessor processor = new CommandProcessor(new ICommand[] { addUsers, listUsers });
             var manager = new CommandManager(processor);
             manager.Start();
