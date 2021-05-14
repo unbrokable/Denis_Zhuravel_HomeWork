@@ -32,95 +32,109 @@ namespace Task_Now
                 new Customer(19, "Florencio Messenger", new DateTime(2017, 10, 2), 36.8),
                 new Customer(20, "Anna Ledesma", new DateTime(2017, 12, 29), 0.8)
             };
+
             FirstUser(customers);
+
             AvgBalance(customers);
+
             DateBetween(new DateTime(2016, 5, 17), new DateTime(2017, 12, 29), customers);
-            FilterById(customers,12);
+
+            FilterById(customers, 12);
+
             FilterByName(customers, "an");
+
             FilterByMonth(customers);
+
             OrderByPropeties(customers, "Name", "ASC");
+
             PrintName(customers);
         }
+
         public static void FirstUser(List<Customer> customers)
         {
             var mindateTime = customers.Min(i => i.RegistrationDate);
             Console.WriteLine(customers.FirstOrDefault(i => i.RegistrationDate == mindateTime));
         }
+
         public static void AvgBalance(List<Customer> customers)
         {
             var avgBalance = customers.Average(i => i.Balance);
             Console.WriteLine($"Avg balance = {avgBalance}");
         }
+
         public static void FilterById(List<Customer> customers, int id)
         {
             var filterById = customers.Where(i => i.Id == id);
             Console.WriteLine("Filter by id");
             filterById.ToList().ForEach(i => Console.WriteLine(i));
         }
-        public static void DateBetween(DateTime first , DateTime second , List<Customer> customers)
+
+        public static void DateBetween(DateTime first, DateTime second, List<Customer> customers)
         {
-            if(first > second)
-            {
-                DateTime date = first;
-                first = second;
-                second = date;
-            }
             Console.WriteLine("Filter by Date");
             var filterCustumer = customers.Where(i => i.RegistrationDate >= first && i.RegistrationDate <= second);
-            if(filterCustumer.Count()== 0)
+            
+            if (!filterCustumer.Any())
             {
                 Console.WriteLine("No result");
             }
+           
             else
             {
-                filterCustumer.ToList().ForEach(i => Console.WriteLine(i.ToString()) );
+                filterCustumer.ToList().ForEach(i => Console.WriteLine(i.ToString()));
             }
+        
         }
+
         public static void FilterByName(List<Customer> customers, string match)
         {
             Console.WriteLine("Filter by Name");
             var filterByName = customers.Where(i => i.Name.Contains(match, StringComparison.OrdinalIgnoreCase));
             filterByName.ToList().ForEach(i => Console.WriteLine(i));
         }
+
         public static void FilterByMonth(List<Customer> customers)
         {
             Console.WriteLine("Filter by Month");
-            List<List<Customer>> groupCustumers = new List<List<Customer>>();
-            for (int i = 1; i <= 12; i++)
+            var groupCustome = customers.OrderBy(i => i.RegistrationDate.Month)
+                .GroupBy(i => i.RegistrationDate.Month).Select(x => new { Key = x.Key, Customers = x.OrderBy(x => x.Name) });
+            
+            foreach (var item in groupCustome)
             {
-                var monthCustumer = customers.Where(item => item.RegistrationDate.Month == i).ToList();
-                if (monthCustumer.Count != 0)
+                Console.WriteLine(item.Key);
+
+                foreach (var custome in item.Customers)
                 {
-                    groupCustumers.Add(monthCustumer);
+                    Console.WriteLine($"\t{custome}");
                 }
-            }
-            for (int i = 0; i < groupCustumers.Count; i++)
-            {
-                groupCustumers[i] = groupCustumers[i].OrderBy(o => o.Name).ToList();
-                groupCustumers[i].ForEach(j => Console.WriteLine(j));
+
             }
         }
+
         public static void OrderByPropeties(List<Customer> customers, string property, string order)
         {
             Console.WriteLine("Order by properties");
             List<Customer> orderList = new List<Customer>();
-            if (String.Equals(order, "ASC",StringComparison.OrdinalIgnoreCase))
+
+            if (String.Equals(order, "ASC", StringComparison.OrdinalIgnoreCase))
             {
-                 orderList = customers.OrderBy(i => i.GetType().GetProperty(property).GetValue(i) ).ToList();
+                orderList = customers.OrderBy(i => i.GetType().GetProperty(property).GetValue(i)).ToList();
             }
+
             else if (String.Equals(order, "DESC", StringComparison.OrdinalIgnoreCase))
             {
                 orderList = customers.OrderByDescending(i => i.GetType().GetProperty(property).GetValue(i)).ToList();
             }
+
             orderList.ForEach(i => Console.WriteLine(i));
         }
+
         public static void PrintName(List<Customer> customers)
         {
             Console.WriteLine("Print Names");
             StringBuilder @string = new StringBuilder();
             customers.ForEach(i => @string.Append(i.Name).Append(","));
-            Console.WriteLine(@string.ToString().Remove(@string.Length-1));
-
+            Console.WriteLine(@string.ToString().Remove(@string.Length - 1));
         }
         // definition of Customer:
         public class Customer
@@ -140,6 +154,7 @@ namespace Task_Now
                 this.RegistrationDate = registrationDate;
                 this.Balance = balance;
             }
+
             public override string ToString()
             {
                 return $"Id = {Id} Name = {Name} RegistrationDate = {RegistrationDate.ToShortDateString()} Balance = {Balance}";
