@@ -46,9 +46,10 @@ namespace HW_LINQ2
 
         static void PrintRange(int start, int end)
         {
-            StringBuilder @string = new StringBuilder();
-            Enumerable.Range(start, end - start).ToList().ForEach(i => @string.Append(i).Append(','));
-            Console.WriteLine(@string.ToString().Remove(@string.Length - 1));
+            String @string = Enumerable.Range(start, end - start)
+                .Aggregate(new StringBuilder(), (a, b) => a.Append(b).Append(","))
+                .ToString();
+            Console.WriteLine(@string.Remove(@string.Length - 1));
         }
 
         static void PrintRangeDividing3(int start, int end)

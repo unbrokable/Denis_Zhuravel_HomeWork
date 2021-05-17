@@ -37,8 +37,7 @@ namespace HW_LINQ2
 
         public void PrintActorName()
         {
-            var actors = data.Where(i => i is Film)
-                .Cast<Film>()
+            var actors = data.OfType<Film>()
                 .Aggregate(new List<Actor>(), (a, b) => a.Union(b.Actors).ToList())
                 .Select(i => i.Name)
                 .Aggregate((a, b) => string.Concat(a,",",b));
@@ -47,8 +46,8 @@ namespace HW_LINQ2
 
         public void PrintActerBornIn()
         {
-            data.Where(i => i is Film)
-                .Cast<Film>().ToList()
+            data.OfType<Film>()
+                .ToList()
                 .ForEach(i =>
                 {
                     i.Actors.Where(a => a.Birthdate.Month == 8).ToList().ForEach(a =>
@@ -60,8 +59,7 @@ namespace HW_LINQ2
 
         public void PrintOldestActors()
         {
-            data.Where(i => i is Film)
-                .Cast<Film>()
+            data.OfType<Film>()
                 .Select(i => i.Actors)
                 .Aggregate(new List<Actor>(), (a, b) =>
                 {
@@ -73,8 +71,8 @@ namespace HW_LINQ2
 
         public void PrintArticleAmount()
         {
-            data.Where(i => i is Article)
-                .Cast<Article>().GroupBy(i => i.Author)
+            data.OfType<Article>()
+                .GroupBy(i => i.Author)
                 .Select(i => new { Key = i.Key, Count = i.Count() })
                 .ToList()
                 .ForEach(i => Console.WriteLine(String.Concat(i.Key, " : ", i.Count)));
@@ -82,8 +80,8 @@ namespace HW_LINQ2
 
         public void PrintArticleFilmAmount()
         {
-            data.Where(i => i is ArtObject)
-                .Cast<ArtObject>().GroupBy(i => i.Author)
+            data.OfType<ArtObject>()
+                .GroupBy(i => i.Author)
                 .Select(i => new { Key = i.Key, Count = i.Count() })
                 .ToList()
                 .ForEach(i => Console.WriteLine(String.Concat(i.Key, " : ", i.Count)));
@@ -91,8 +89,7 @@ namespace HW_LINQ2
 
         public int DistinctSymbols()
         {
-            return data.Where(i => i is Film)
-                .Cast<Film>()
+            return data.OfType<Film>()
                 .Select(i => i.Actors)
                 .Aggregate(new StringBuilder(), (a, b) =>
                 {
@@ -108,8 +105,7 @@ namespace HW_LINQ2
 
         public void PrintSortedArticles()
         {
-            data.Where(i => i is Article)
-                .Cast<Article>()
+            data.OfType<Article>()
                 .OrderBy(i => i.Author).ThenBy(i => i.Pages)
                 .ToList()
                 .ForEach(i => Console.WriteLine(i.Name));
@@ -117,8 +113,8 @@ namespace HW_LINQ2
 
         public void PrintActorFilms()
         {
-            var actors = data.Where(i => i is Film)
-                .Cast<Film>()
+            var actors = data
+                .OfType<Film>()
                 .Select(i => i.Actors)
                 .Aggregate(new List<Actor>(), (a, b) =>
                 {
@@ -128,8 +124,8 @@ namespace HW_LINQ2
                 .Select(i => new
                 {
                     Key = i.Key,
-                    Films = data.Where(i => i is Film)
-                    .Cast<Film>()
+                    Films = data
+                    .OfType<Film>()
                     .Where(f => f.Actors.Where(a => a.Name == i.Key).Any())
                 });
 
@@ -166,8 +162,7 @@ namespace HW_LINQ2
 
         public void PrintDictionaryAuthorArticles()
         {
-            var authors = data.Where(i => i is Article)
-                .Cast<Article>()
+            var authors = data.OfType<Article>()
                 .GroupBy(i => i.Author)
                 .ToDictionary(i => i.Key);
             foreach (var author in authors)
