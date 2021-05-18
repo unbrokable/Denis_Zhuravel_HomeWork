@@ -52,8 +52,7 @@ namespace Task_Now
 
         public static void FirstUser(List<Customer> customers)
         {
-            var mindateTime = customers.Min(i => i.RegistrationDate);
-            Console.WriteLine(customers.FirstOrDefault(i => i.RegistrationDate == mindateTime));
+            Console.WriteLine(customers.OrderBy(i => i.RegistrationDate).FirstOrDefault());
         }
 
         public static void AvgBalance(List<Customer> customers)
@@ -73,17 +72,17 @@ namespace Task_Now
         {
             Console.WriteLine("Filter by Date");
             var filterCustumer = customers.Where(i => i.RegistrationDate >= first && i.RegistrationDate <= second);
-            
+
             if (!filterCustumer.Any())
             {
                 Console.WriteLine("No result");
             }
-           
+
             else
             {
                 filterCustumer.ToList().ForEach(i => Console.WriteLine(i.ToString()));
             }
-        
+
         }
 
         public static void FilterByName(List<Customer> customers, string match)
@@ -97,13 +96,14 @@ namespace Task_Now
         {
             Console.WriteLine("Filter by Month");
             var groupCustome = customers.OrderBy(i => i.RegistrationDate.Month)
-                .GroupBy(i => i.RegistrationDate.Month).Select(x => new { Key = x.Key, Customers = x.OrderBy(x => x.Name) });
-            
+                .ThenBy(i => i.Name)
+                .GroupBy(i => i.RegistrationDate.Month);
+
             foreach (var item in groupCustome)
             {
                 Console.WriteLine(item.Key);
 
-                foreach (var custome in item.Customers)
+                foreach (var custome in item)
                 {
                     Console.WriteLine($"\t{custome}");
                 }
@@ -132,11 +132,11 @@ namespace Task_Now
         public static void PrintName(List<Customer> customers)
         {
             Console.WriteLine("Print Names");
-            StringBuilder @string = new StringBuilder();
-            customers.ForEach(i => @string.Append(i.Name).Append(","));
-            Console.WriteLine(@string.ToString().Remove(@string.Length - 1));
+            String @string = customers.Select(i => i.Name)
+                .Aggregate((a, b) => String.Concat(a, ",", b));
+            Console.WriteLine(@string);
         }
-        // definition of Customer:
+
         public class Customer
         {
             public long Id { get; set; }
