@@ -47,14 +47,13 @@ namespace HW_LINQ2
         public void PrintActerBornIn()
         {
             data.OfType<Film>()
-                .ToList()
-                .ForEach(i =>
+                .Select(i => i.Actors.Where(a => a.Birthdate.Month == 8).Select(a => a.Name))
+                .Aggregate(new List<string>(), (a, b) =>
                 {
-                    i.Actors.Where(a => a.Birthdate.Month == 8).ToList().ForEach(a =>
-                    {
-                        Console.Write(String.Concat(a.Name, " "));
-                    });
-                });
+                    return a.Union(b).ToList();
+                })
+                .ToList().ForEach(i => Console.WriteLine(String.Concat(i," ")));
+              
         }
 
         public void PrintOldestActors()
