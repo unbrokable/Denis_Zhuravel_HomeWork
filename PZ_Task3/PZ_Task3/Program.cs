@@ -57,13 +57,6 @@ namespace PZ_Task3
             int enterNumber;
             var userPrint = Console.ReadLine();
             int.TryParse(userPrint, out enterNumber);
-            // int pow = 0;
-            // while (enterNumber > 9)
-            // {
-            //    pow++;
-            //    enterNumber /= 10;
-            // }
-            // Console.WriteLine($"{enterNumber}*10^{pow}");
             Console.WriteLine(enterNumber.ToString("E"));
 
         }
