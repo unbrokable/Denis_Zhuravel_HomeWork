@@ -132,8 +132,7 @@ namespace Task_Now
         public static void PrintName(List<Customer> customers)
         {
             Console.WriteLine("Print Names");
-            String @string = customers.Select(i => i.Name)
-                .Aggregate((a, b) => String.Concat(a, ",", b));
+            String @string = String.Join(',',customers.Select(i => i.Name));
             Console.WriteLine(@string);
         }
 
