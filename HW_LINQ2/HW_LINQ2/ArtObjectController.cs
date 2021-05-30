@@ -30,7 +30,7 @@ namespace HW_LINQ2
             Console.WriteLine("All movie actors");
             PrintActorFilms();
             Console.WriteLine("Sum of int");
-            PrintAmountOfInt();
+            PrintAmountOfPagesAndTotal();
             Console.WriteLine("Dictionary author articles");
             PrintDictionaryAuthorArticles();
         }
@@ -40,20 +40,20 @@ namespace HW_LINQ2
             var actors = data.OfType<Film>()
                 .Aggregate(new List<Actor>(), (a, b) => a.Union(b.Actors).ToList())
                 .Select(i => i.Name)
-                .Aggregate((a, b) => string.Concat(a,",",b));
+                .Aggregate((a, b) => string.Concat(a, ",", b));
             Console.WriteLine(actors.ToString());
         }
 
         public void PrintActerBornIn()
         {
-            data.OfType<Film>()
-                .Select(i => i.Actors.Where(a => a.Birthdate.Month == 8).Select(a => a.Name))
-                .Aggregate(new List<string>(), (a, b) =>
-                {
-                    return a.Union(b).ToList();
-                })
-                .ToList().ForEach(i => Console.WriteLine(String.Concat(i," ")));
-              
+            Console.WriteLine(String.Join(' ', 
+                data.OfType<Film>()
+                    .Select(i => i.Actors.Where(a => a.Birthdate.Month == 8).Select(a => a.Name))
+                    .Aggregate(new List<string>(), (a, b) =>
+                    {
+                        return a.Union(b).ToList();
+                    }
+                )));
         }
 
         public void PrintOldestActors()
@@ -137,26 +137,13 @@ namespace HW_LINQ2
                 }
             }
         }
-        
-        public void PrintAmountOfInt()
+
+        public void PrintAmountOfPagesAndTotal()
         {
-            var amount = data
-                //.Where(i => i is Article )
-                .Where(i => i is IEnumerable<int> || i.GetType().GetProperties().Where(i => Type.GetTypeCode(i.PropertyType) is TypeCode.Int32).Any())
-                .Select(i =>
-                {
-                    if (i is IEnumerable<int> arr)
-                    {
-                        return arr.Sum();
-                    }
-                    int sum = 0;
-                    foreach (var item in i.GetType().GetProperties().Where(i => Type.GetTypeCode(i.PropertyType) is TypeCode.Int32))
-                    {
-                        sum += Convert.ToInt32(item.GetValue(i));
-                    }
-                    return sum;
-                }).Sum();
-            Console.WriteLine(amount);
+            var amountPages = data.OfType<Article>().Sum(i => i.Pages);
+            var totalAmount = data.OfType<ArtObject>().Sum(i => i.Year) +
+                              amountPages + data.OfType<Film>().Sum(i => i.Length);
+            Console.WriteLine($"Amount of Pages {amountPages}\nTotal {totalAmount}");
         }
 
         public void PrintDictionaryAuthorArticles()
@@ -169,7 +156,7 @@ namespace HW_LINQ2
                 Console.WriteLine(author.Key);
                 foreach (var film in author.Value)
                 {
-                    Console.WriteLine(String.Concat("\t",film.Name));
+                    Console.WriteLine(String.Concat("\t", film.Name));
                 }
             }
         }

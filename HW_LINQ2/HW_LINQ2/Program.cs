@@ -46,10 +46,8 @@ namespace HW_LINQ2
 
         static void PrintRange(int start, int end)
         {
-            String @string = Enumerable.Range(start, end - start)
-                .Aggregate(new StringBuilder(), (a, b) => a.Append(b).Append(","))
-                .ToString();
-            Console.WriteLine(@string.Remove(@string.Length - 1));
+            String @string = String.Join(',', Enumerable.Range(start, end - start)); 
+            Console.WriteLine(@string);
         }
 
         static void PrintRangeDividing3(int start, int end)
@@ -77,9 +75,8 @@ namespace HW_LINQ2
 
         static void PrintAmountChar(string data)
         {
-            var info = data.Split(";")
-                .Select(i => String.Concat(i, ":", i.Where(j => j.CompareTo('a') == 0).Count()))
-                .Aggregate((a, b) => String.Concat(a, ",", b));
+            var info = String.Join(',', data.Split(";")
+                .Select(i => String.Concat(i, ":", i.Where(j => j.CompareTo('a') == 0).Count())));
             Console.WriteLine(info);
         }
 
