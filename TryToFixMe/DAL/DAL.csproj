@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Core\Domain.csproj" />
+      <ProjectReference Include="..\DAL.Abstractions\DAL.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="10.1.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BLL.Abstractions\BLL.Abstractions.csproj" />
+      <ProjectReference Include="..\Core\Domain.csproj" />
+      <ProjectReference Include="..\DAL.Abstractions\DAL.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
