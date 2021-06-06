@@ -86,7 +86,7 @@ namespace TestCalculator
         {
             Calculator calculator = new Calculator();
             var exception = Assert.Throws<ArgumentException>(() => calculator.Add("12,11,-12,12"));
-            Assert.AreEqual(exception.Message, "negatives not allowed");
+            Assert.AreEqual("negatives not allowed -12",exception.Message );
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace TestCalculator
         {
             Calculator calculator = new Calculator();
             var exception = Assert.Throws<ArgumentException>(() => calculator.Add("12,-11,-12,12"));
-            Assert.AreEqual(exception.Message, "negatives not allowed -11,-12");
+            Assert.AreEqual("negatives not allowed -11,-12",exception.Message);
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace TestCalculator
         {
             Calculator calculator = new Calculator((s,i) => throw new ArgumentException("Event is work"));
             var exception = Assert.Throws<ArgumentException>(() => calculator.Add("12,12"));
-            Assert.AreEqual(exception.Message, "Event is work");
+            Assert.AreEqual("Event is work",exception.Message);
         }
 
         [Test]

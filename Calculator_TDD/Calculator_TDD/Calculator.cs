@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Calculator_TDD
 {
     public class Calculator
     {
         private int countOfCallMethodAdd;
-        public event Action<string, int> AddOccured;      
-        
+        public event Action<string, int> AddOccured;
+
         public Calculator() { }
-        public Calculator(Action<string,int> action)
+        public Calculator(Action<string, int> action)
         {
             this.AddOccured = action;
         }
@@ -19,52 +20,50 @@ namespace Calculator_TDD
         public int Add(string numbers)
         {
             countOfCallMethodAdd++;
+
             if (String.IsNullOrEmpty(numbers))
             {
                 return 0;
             }
-            int[] arr;
-            
-            if (numbers.StartsWith("//") && !numbers.StartsWith("//["))
+
+            List<string> collection = new List<string>();
+
+            foreach (Match match in Regex.Matches(numbers,@"\[.*?\]"))
             {
-                var delimiter = numbers.Substring(0,numbers.IndexOf("\n"))
-                    .Replace("//","");
-                var arrayOfnumbers = numbers.Remove(0, numbers.IndexOf("\n")+1);
-                arr = arrayOfnumbers.Split(delimiter).Select(i => int.Parse(i)).ToArray();
+                collection.Add(match.Value);
             }
-            else if (numbers.StartsWith("//["))
+
+            foreach (Match match in Regex.Matches(numbers, @"^[^0-9]*\n"))
             {
-                var delimiter = numbers.Substring(0, numbers.IndexOf("\n"))
-                   .Replace("//", "").Replace("][", " ")
-                   .Replace("[", "")
-                   .Replace("]", "").Split(" ");
-                var arrayOfnumbers = numbers.Remove(0, numbers.IndexOf("\n") + 1);
-                for (int i = 0; i < delimiter.Length; i++)
-                {
-                    arrayOfnumbers = arrayOfnumbers.Replace(delimiter[i], " ");
-                }
-                arr = arrayOfnumbers.Split(" ").Select(i => int.Parse(i)).ToArray();
+                collection.Add(match.Value);
+            }
+
+            Regex regexInvalidSymbols = new Regex(@"(\[)|(\])|(\/\/)|(\n)");
+            string delimiter = regexInvalidSymbols
+                .Replace(String.Join("|", collection), "")
+                .Replace("*", @"\*");
+
+            if(delimiter.Length == 0)
+            {
+                var regexDelimiter = new Regex(@",| |\n");
+                numbers = regexDelimiter.Replace(numbers, " ");
             }
             else
             {
-                arr = numbers.Split(new char[] { ',', ' ', '\n' }).Select(i => int.Parse(i)).ToArray();
+                var regexDelimiter = new Regex(delimiter);
+                numbers = regexDelimiter.Replace(numbers.Substring(numbers.IndexOf("\n") == -1 ? 0 : numbers.IndexOf("\n")), " ");
             }
             
-            var arrNegativeNumbers = arr.Where(i => i < 0);
-            
-            if (arrNegativeNumbers.Count() == 1)
+            var arr = numbers.Split(" ").Select(i => int.Parse(i));
+            if (arr.Where(i => i < 0).Any())
             {
-                throw new ArgumentException("negatives not allowed");
-            }
-            else if (arrNegativeNumbers.Count() >  1)
-            {
-                throw new ArgumentException($"negatives not allowed {String.Join(',', arrNegativeNumbers)}");
+                throw new ArgumentException($"negatives not allowed {String.Join(',', arr.Where(i => i < 0))}");
             }
 
             AddOccured?.Invoke(numbers, numbers.Length);
             return arr.Where(i => i < 1000).Sum();
         }
 
-        public int GetCalledCount() => countOfCallMethodAdd;  
+        public int GetCalledCount() => countOfCallMethodAdd;
     }
 }
