@@ -19,14 +19,14 @@ namespace ADO
         {
             using SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
-            SqlCommand command = new SqlCommand(sqlExpression, connection);
+            using SqlCommand command = new SqlCommand(sqlExpression, connection);
             string[] parametersName = parser.Parse(sqlExpression);
-            for (int i = 0; i < parametersName.Length; i++)
+            foreach (var item in parametersName)
             {
-                SqlParameter param = new SqlParameter(parametersName[i], parameters[parametersName[i]]);
+                SqlParameter param = new SqlParameter(item, parameters[item]);
                 command.Parameters.Add(param);
             }
-            SqlDataReader reader = command.ExecuteReader();
+            using SqlDataReader reader = command.ExecuteReader();
             List<T> result = new List<T>();
             while (reader.Read())
             {

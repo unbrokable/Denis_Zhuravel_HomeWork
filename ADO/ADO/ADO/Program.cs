@@ -16,10 +16,10 @@ namespace ADO
             var kernel = new StandardKernel(modul);
             var sqlCommander = (ICommanderADO)kernel.Get(typeof(ICommanderADO));
 
-            string sqlExpressionCategoriesSales = "Select c.ProductCategoryID, c.Name, sum(s.UnitPrice) as 'Sum' from SalesLT.ProductCategory c " +
-                "join SalesLT.Product pr on pr.ProductCategoryID = c.ProductCategoryID " +
-                "join SalesLT.SalesOrderDetail s on s.ProductID = pr.ProductID " +
-                "group by c.ProductCategoryID, c.Name";
+            string sqlExpressionCategoriesSales = String.Concat("Select c.ProductCategoryID, c.Name, sum(s.UnitPrice) as 'Sum' from SalesLT.ProductCategory c ",
+                "join SalesLT.Product pr on pr.ProductCategoryID = c.ProductCategoryID ",
+                "join SalesLT.SalesOrderDetail s on s.ProductID = pr.ProductID ",
+                "group by c.ProductCategoryID, c.Name");
 
             Console.WriteLine("\nTask 7(1)\n");
 
@@ -30,28 +30,26 @@ namespace ADO
 
             Console.WriteLine("\nTask 7(2)\n");
 
-            string sqlExpressionCustumersDiscounts = "Select  CustomerID, CONCAT(FirstName,' ', MiddleName,' ', LastName) as Name  from SalesLT.Customer " +
-                "where CustomerID in ( " +
-                "select distinct c.CustomerID from SalesLT.Customer c " +
-                "join SalesLT.SalesOrderHeader sh on sh.CustomerID = c.CustomerID " +
-                "join SalesLT.SalesOrderDetail sd on sd.SalesOrderID = sh.SalesOrderID " +
-                "group by c.CustomerID " +
-                "having  max(sd.UnitPriceDiscount * 100) > @discount )";
+            string sqlExpressionCustumersDiscounts = String.Concat("Select distinct c.CustomerID, CONCAT(FirstName,' ', MiddleName,' ', LastName) as Name  from SalesLT.Customer c ",
+                "join SalesLT.SalesOrderHeader sh on sh.CustomerID = c.CustomerID ",
+                "join SalesLT.SalesOrderDetail sd on sd.SalesOrderID = sh.SalesOrderID ",
+                "group by c.CustomerID, CONCAT(FirstName,' ', MiddleName,' ', LastName)",
+                "having  max(sd.UnitPriceDiscount ) >= @discount ");
 
-            foreach (var item in sqlCommander.Execute<Custumer>(sqlExpressionCustumersDiscounts, new Dictionary<string, object> { { "@discount",4 }}))
+            foreach (var item in sqlCommander.Execute<Custumer>(sqlExpressionCustumersDiscounts, new Dictionary<string, object> { { "@discount",0.4 }}))
             {
                 Console.WriteLine(item.ToString());
             }
 
             Console.WriteLine("\nTask 7(3)\n");
 
-            string sqlExpressionCustumersPurchase = "select CustomerID, CONCAT(FirstName, ' ', MiddleName, ' ', LastName) as Name from SalesLT.Customer " +
-                "where CustomerID in( " +
-                "select distinct c.CustomerID from SalesLT.Customer " +
-                "c join SalesLT.SalesOrderHeader sh on sh.CustomerID = c.CustomerID " +
-                "join SalesLT.SalesOrderDetail sd on sd.SalesOrderID = sh.SalesOrderID " +
-                "group by c.CustomerID " +
-                "having SUM(sd.UnitPrice) > @sum)";
+            string sqlExpressionCustumersPurchase = String.Concat("select CustomerID, CONCAT(FirstName, ' ', MiddleName, ' ', LastName) as Name from SalesLT.Customer ",
+                "where CustomerID in( ",
+                "select distinct c.CustomerID from SalesLT.Customer ",
+                "c join SalesLT.SalesOrderHeader sh on sh.CustomerID = c.CustomerID ",
+                "join SalesLT.SalesOrderDetail sd on sd.SalesOrderID = sh.SalesOrderID ",
+                "group by c.CustomerID ",
+                "having SUM(sd.UnitPrice) > @sum)");
 
             foreach (var item in sqlCommander.Execute<Custumer>(sqlExpressionCustumersPurchase, new Dictionary<string, object> { { "@sum", 15000 } }))
             {
@@ -60,9 +58,9 @@ namespace ADO
 
             Console.WriteLine("\nTask 4(last)\n");
 
-            string sqlExpressionProductsPage = "select ProductID, Name, Color, Weight from SalesLT.Product " +
-                "order by Weight " +
-                "OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+            string sqlExpressionProductsPage = String.Concat("select ProductID, Name, Color, Weight from SalesLT.Product ",
+                "order by Weight ",
+                "OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY");
 
             foreach (var item in sqlCommander.Execute<Product>(sqlExpressionProductsPage, new Dictionary<string, object> { { "@skip", 10 }, { "@take", 10 } }))
             {
@@ -71,9 +69,9 @@ namespace ADO
 
             Console.WriteLine("\nTask 5(last)\n");
 
-            string sqlExpressionProductsCategory = "select pr.ProductID, pr.Name, pr.ProductNumber as Number ,c2.Name as Category,c.Name as ParentCategory from  SalesLT.Product pr " +
-                "join SalesLT.ProductCategory c on pr.ProductCategoryID = c.ProductCategoryID " +
-                "join SalesLT.ProductCategory c2 on c2.ProductCategoryID = c.ParentProductCategoryID";
+            string sqlExpressionProductsCategory = String.Concat("select pr.ProductID, pr.Name, pr.ProductNumber as Number ,c2.Name as Category,c.Name as ParentCategory from  SalesLT.Product pr ",
+                "join SalesLT.ProductCategory c on pr.ProductCategoryID = c.ProductCategoryID ",
+                "join SalesLT.ProductCategory c2 on c2.ProductCategoryID = c.ParentProductCategoryID");
 
             foreach (var item in sqlCommander.Execute<ProductCategory>(sqlExpressionProductsCategory, null))
             {

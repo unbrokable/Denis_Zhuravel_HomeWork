@@ -4,13 +4,13 @@ select pr.ProductID , pr.Name, pr.Color , pr.rowguid from SalesLT.Product pr
 select c.CustomerID , CONCAT(c.FirstName, ' ',c.MiddleName,' ', c.LastName), c.EmailAddress, c.Phone from SalesLT.Customer c
 --Task 2 --
 select * from SalesLT.Product pr
-where pr.Color like 'Black'
+where pr.Color = 'Black'
 
 select * from SalesLT.Product pr
-where pr.Color like 'Black' or pr.Color like 'Gray' or pr.Color like 'Multi'
+where pr.Color = 'Black' or pr.Color = 'Gray' or pr.Color = 'Multi'
 
 select * from SalesLT.Product pr
-where pr.Color like 'Black' or pr.Color like 'Yellow' 
+where pr.Color = 'Black' or pr.Color = 'Yellow' 
 
 select * from SalesLT.Product pr
 where pr.Weight > 1000
@@ -103,13 +103,11 @@ join SalesLT.SalesOrderDetail s on s.ProductID = pr.ProductID
 group by c.ProductCategoryID, c.Name
 
 
-Select  * from SalesLT.Customer 
-	where CustomerID in(
-	select distinct c.CustomerID from SalesLT.Customer c
+Select distinct c.CustomerID, CONCAT(FirstName,' ', MiddleName,' ', LastName)  from SalesLT.Customer c 
 	join SalesLT.SalesOrderHeader sh on sh.CustomerID = c.CustomerID
 	join SalesLT.SalesOrderDetail sd on sd.SalesOrderID  = sh.SalesOrderID
-	group by c.CustomerID
-	having  max(sd.UnitPriceDiscount*100) > 4)
+	group by c.CustomerID,CONCAT(FirstName,' ', MiddleName,' ', LastName) 
+	having  max(sd.UnitPriceDiscount) >= 0.4
 
 
 select CustomerID, CONCAT(FirstName,' ', MiddleName,' ', LastName) from SalesLT.Customer 
