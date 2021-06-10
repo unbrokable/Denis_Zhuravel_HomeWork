@@ -22,9 +22,10 @@ namespace EF_Practise.Repositories
             return context.Set<T>().FirstOrDefault(specification.Expression);
         }
 
-        public IEnumerable<T> Get<T>(Specification<T> specification) where T : class, new()
+        public IQueryable<T> Get<T>(Specification<T> specification) where T : class, new()
         {
             return context.Set<T>().Where(specification.Expression);
         }
+
     }
 }

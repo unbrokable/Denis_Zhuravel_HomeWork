@@ -2,10 +2,8 @@
 using EF_Practise.Interfaces;
 using EFlecture.Core.Specifications;
 using System;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
+using System.Text;
 
 namespace EF_Practise
 {
@@ -17,13 +15,12 @@ namespace EF_Practise
             this.repository = repository;
         }
 
-        public string GetFilesAndDirectories(int directoryId)
+        public string GetFilesAndDirectories(int directoryId, int userId)
         {
-            //change
-            var specForDirectory = new Specification<Directory>(i => i.Id == directoryId);
+            var specForFiles = new Specification<File>(i => !GetRestrictFiles(userId).Contains(i.Id) && i.DirectoryId == directoryId);
             var specForParent = new Specification<Directory>(i => i.ParentDirectoryId == directoryId);
-            var curDir = repository.Find<Directory>(specForDirectory);
-            var data = new { Files = curDir.Files, Directories = repository.Get<Directory>(specForParent)};
+           
+            var data = new { Files = repository.Get<File>(specForFiles), Directories = repository.Get<Directory>(specForParent)};
 
             var @string = new StringBuilder();
             @string.AppendLine("______Files________");
@@ -41,12 +38,63 @@ namespace EF_Practise
 
         public string GetReportDistinctFiles()
         {
-            throw new NotImplementedException();
+            var files = repository.Get<TextFile>(new Specification<TextFile>(i => true)).Select(i => new { i.Title, Type = "TextFile"})
+                .Union(repository.Get<ImageFile>(new Specification<ImageFile>(i => true)).Select(i => new { i.Title, Type = "ImageFile" }))
+                .Union(repository.Get<AudioFile>(new Specification<AudioFile>(i => true)).Select(i => new { i.Title, Type = "AudioFile" }))
+                .Union(repository.Get<VideoFile>(new Specification<VideoFile>(i => true)).Select(i => new { i.Title, Type = "VideoFile" }))
+                .GroupBy(i => i.Type).Select( i => new { Key = i.Key, Amount = i.Count() }).ToList();
+            StringBuilder @string = new StringBuilder();
+            @string.AppendLine("|Type of File\t|Amount\t|");
+            foreach (var item in files)
+            {
+                @string.AppendLine($"|{item.Key}\t|{item.Amount}\t|");
+            }         
+            return @string.ToString();
         }
 
         public string GetTotalNumberOfFiles(int directoryId, int userId)
         {
-            throw new NotImplementedException();
+            var dir = repository.Find<Directory>(new Specification<Directory>(i => i.Id == directoryId));
+            var specificationForFile = new Specification<File>(i => i.DirectoryId == directoryId);
+            GetFiles(dir);
+            var files = repository.Get<File>(specificationForFile);
+            var filesForUser = repository.Get<FilePermission>(new Specification<FilePermission>(i => i.UserId == userId && i.CanRead && i.CanWrite)).Select(i => i.FileId).Where(i => files.Select(i => i.Id).Contains(i)).Count();
+            return $"Files: {files.Count()} For user: {filesForUser}";
+
+            void GetFiles(Directory directory)
+            {
+                if (directory is null)
+                {
+                    return;
+                }
+                specificationForFile = specificationForFile.Or(new Specification<File>(i => i.DirectoryId == directory.Id));
+                var dirNext = repository.Get<Directory>(new Specification<Directory>(i => i.ParentDirectoryId == directory.Id));
+                foreach (var item in dirNext)
+                {
+                    GetFiles(item);
+                }
+
+            }
         }
+
+        public IQueryable<int> GetRestrictDirectories(int userId)
+        {
+            return repository.Get<DirectoryPermission>(new Specification<DirectoryPermission>(i => !i.CanRead && !i.CanWrite && userId == i.UserId))
+                           .Select(i => i.DirectoryId);
+        }
+
+        public IQueryable<int> GetRestrictFiles(int userId)
+        {
+            var restrictCatalogFile = repository.Get<File>(
+                        new Specification<File>(j =>
+                            GetRestrictDirectories(userId)
+                           .Contains(j.DirectoryId)
+                    )).Select(i => i.Id);
+            var restrictFiles = repository.Get<FilePermission>(new Specification<FilePermission>(i => i.CanRead && i.CanWrite && userId == i.UserId))
+                .Select(i => i.FileId);
+
+            return restrictCatalogFile.Except(restrictFiles);
+        }
+
     }
 }

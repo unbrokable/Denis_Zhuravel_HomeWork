@@ -3,7 +3,7 @@ using EF_Practise.Data.Entities;
 using EF_Practise.Interfaces;
 using System;
 using System.Collections.Generic;
-using EF_Practise.Data;
+
 namespace EF_Practise
 {
     class Program
@@ -11,7 +11,7 @@ namespace EF_Practise
         static void Main(string[] args)
         {
             var container = Startup.ConfigureService();
-            //SetData((ApplicationContext)container.GetService(typeof(ApplicationContext)));
+            SetData((ApplicationContext)container.GetService(typeof(ApplicationContext)));
             var fileService = (IFileService)container.GetService(typeof(IFileService));
             var directoryService = (IDirectoryService)container.GetService(typeof(IDirectoryService));
             var res = fileService.GetAvailableFileReadInDirectory(1, 1);
@@ -22,7 +22,17 @@ namespace EF_Practise
                 Console.WriteLine(item.Title);
             }
             Console.WriteLine("Task 6");
-            Console.WriteLine(directoryService.GetFilesAndDirectories(1));
+            Console.WriteLine(directoryService.GetFilesAndDirectories(1,1));
+            Console.WriteLine("Task 7");
+            foreach (var item in fileService.GetFullPathOfFiles(4))
+            {
+                Console.WriteLine(item);
+            }
+            
+            Console.WriteLine("Task 9");
+            Console.WriteLine(directoryService.GetTotalNumberOfFiles(1,1));
+            Console.WriteLine("Task 10");
+            Console.WriteLine(directoryService.GetReportDistinctFiles());
             Console.ReadKey();
         }
         static public void SetData(ApplicationContext context)
