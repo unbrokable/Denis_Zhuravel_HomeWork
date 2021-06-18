@@ -1,0 +1,117 @@
+.circle-list{
+    list-style-type: circle;
+}
+table{
+    border-collapse: collapse;
+    width: 300px;
+    height: 100px;
+    text-align: center;
+}
+.site-header{
+    color: red;
+    margin-left:50% ;
+}
+.big-language{
+    font-size: 24;
+    color: red;
+    text-transform: uppercase; 
+}
+.second-header{
+    color: green;
+}
+.blue-language{
+    color: blue;
+    font-weight: bold;
+}
+.left-content{
+    width: 50%;
+}
+.list-language{
+    color: coral;
+}
+
+.back{
+    background-position: right;
+    background-repeat: repeat-y;
+    background-image: url("../Img/repeat9.png");
+}
+.content{
+    font-weight: bold;
+}
+
+
+.left-position{
+    float: left;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+.right-position{
+    float: right;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+.text-content{
+    width: 400px;
+    text-align: justify;
+}
+
+.list-menu{
+    margin-right:auto ;
+    margin-left:auto ;
+    width: 200px;
+    color: white;
+    font-weight: bold;
+}
+.item-menu{
+    padding: 5px;
+    background-color: lime;
+    margin-bottom: 5px;
+}
+
+.center-header{
+    margin-top: 10px;
+    text-align: center;
+}
+.box-content{
+    margin-right: auto;
+    margin-left: auto;
+    width: 600px;
+    border: 2px solid black;
+}
+.box-content > p{
+    text-align: justify;
+    padding:0 5px 0;
+}
+
+.light{
+    width: 200px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid black;
+}
+
+.light-item{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 1px solid black;
+    margin-top: -10px;
+}
+
+.red{
+    background-color: red;
+
+}
+
+.yellow{
+    background-color: yellow;
+}
+
+.green{
+    background-color: green;
+}
+
