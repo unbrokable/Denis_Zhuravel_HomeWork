@@ -16,6 +16,6 @@ namespace EFlecture.Core.Specifications
             this.replacement = replacement;
         }
 
-        protected override Expression VisitParameter(ParameterExpression node) => base.VisitParameter(this.parameter == node ? this.replacement : node);
+      protected override Expression VisitParameter(ParameterExpression node) => base.VisitParameter(this.parameter == node ? this.replacement : node);
     }
 }

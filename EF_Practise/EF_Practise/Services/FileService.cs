@@ -5,38 +5,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EF_Practise.Data.Entities;
+using EF_Practise.Extensions;
+using EF_Practise.DTOs;
+using System.Threading.Tasks;
 
 namespace EF_Practise.Services
 {
     class FileService : IFileService
     {
         protected readonly IRepository repository;
-        private readonly IDirectoryService directoryService;
 
-        public FileService(IRepository repository, IDirectoryService directoryService)
+        public FileService(IRepository repository)
         {
             this.repository = repository;
-            this.directoryService = directoryService;
         }
 
-        public IEnumerable<File> GetAvailableFileReadInDirectory(int userId, int directoryId)
+        public async Task<IEnumerable<FileDTO>> GetAvailableFileReadInDirectoryAsync(int userId, int directoryId)
         {
             var specForDirectory = new Specification<File>(i => i.DirectoryId == directoryId);
-            return repository.Get<File>(specForDirectory)
-                .Where(i => directoryService.GetRestrictFiles(userId).Contains(i.Id)).ToList();
+            return (await repository.GetAsync<File>(specForDirectory.And(FileSpecification.FilterByRestrictFilesForUser(userId))))
+                .Select(i => new FileDTO { Name = i.Title})
+                .ToList();
         }
 
-        public IEnumerable<string> GetFullPathOfFiles(int directoryId)
+        public async Task<IEnumerable<string>> GetFullPathOfFilesAsync(int directoryId)
         {
             var curDirSpec = new Specification<Directory>(i => i.Id == directoryId);
-            var curDir = repository.Find<Directory>(curDirSpec);
-            var filesAndDirectories = repository.Get<File>(new Specification<File>(i => i.DirectoryId == directoryId)).Select(i => String.Concat(i.Title, ".", i.Extention)).ToList();
-            filesAndDirectories.Union(repository.Get<Directory>(new Specification<Directory>(i => i.ParentDirectoryId == directoryId)).Select(i => i.Title).ToList());
+            var curDir =await repository.FindAsync<Directory>(curDirSpec);
+            var filesAndDirectories = (await repository.GetAsync<File>(new Specification<File>(i => i.DirectoryId == directoryId)))
+                .Select(i => String.Concat(i.Title, ".", i.Extention)).ToList();
+            filesAndDirectories.Union((await repository.GetAsync<Directory>(new Specification<Directory>(i => i.ParentDirectoryId == directoryId)))
+                .Select(i => i.Title).ToList());
             List<string> path = new List<string>();
             while (curDir != null)
             {
                 path.Add(curDir.Title);
-                curDir = repository.Find<Directory>(new Specification<Directory>(i => i.Id == curDir.ParentDirectoryId));
+                curDir = await repository.FindAsync<Directory>(new Specification<Directory>(i => i.Id == curDir.ParentDirectoryId));
             }
             path.Reverse();
             return filesAndDirectories.Select(i => String.Concat(String.Join(@"\", path), @"\", i)).ToList();

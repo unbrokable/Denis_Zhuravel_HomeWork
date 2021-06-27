@@ -1,14 +1,12 @@
 ﻿using EFlecture.Core.Specifications;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace EF_Practise.Interfaces
 {
     interface IRepository
     {
-        T Find<T>(Specification<T> specification) where T : class, new();
-        IQueryable<T> Get<T>(Specification<T> specification) where T : class, new();
+        Task<T> FindAsync<T>(Specification<T> specification) where T : class, new();
+        Task<IQueryable<T>> GetAsync<T>(Specification<T> specification) where T : class, new();
     }
 }

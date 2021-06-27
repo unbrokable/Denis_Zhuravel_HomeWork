@@ -1,9 +1,13 @@
 ﻿using EF_Practise.Data.Entities;
+using EF_Practise.DTOs;
+using EF_Practise.Extensions;
 using EF_Practise.Interfaces;
 using EFlecture.Core.Specifications;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EF_Practise
 {
@@ -15,34 +19,26 @@ namespace EF_Practise
             this.repository = repository;
         }
 
-        public string GetFilesAndDirectories(int directoryId, int userId)
+        public async  Task<DirectoryInfoDTO> GetFilesAndDirectoriesAsync(int directoryId, int userId)
         {
-            var specForFiles = new Specification<File>(i => !GetRestrictFiles(userId).Contains(i.Id) && i.DirectoryId == directoryId);
+            var specForFiles = new Specification<File>(i => i.DirectoryId == directoryId).And(FileSpecification.FilterByRestrictFilesForUser(userId));
             var specForParent = new Specification<Directory>(i => i.ParentDirectoryId == directoryId);
            
-            var data = new { Files = repository.Get<File>(specForFiles), Directories = repository.Get<Directory>(specForParent)};
-
-            var @string = new StringBuilder();
-            @string.AppendLine("______Files________");
-            foreach (var item in data.Files)
-            {
-                @string.AppendLine(item.Title);
-            }
-            @string.AppendLine("______Directories________");
-            foreach (var item in data.Directories)
-            {
-                @string.AppendLine(item.Title);
-            }
-            return @string.ToString();
+            var directory = new DirectoryInfoDTO    
+            { 
+                Files =  (await repository.GetAsync<File>(specForFiles)).Select( i => new FileDTO { Name = i.Title}),
+                Directories = (await repository.GetAsync<Directory>(specForParent)).Select(i => new DirectoryDTO { Name = i.Title})
+            };
+            return directory;
         }
 
-        public string GetReportDistinctFiles()
+        public async Task<string> GetReportDistinctFilesAsync()
         {
-            var files = repository.Get<TextFile>(new Specification<TextFile>(i => true)).Select(i => new { i.Title, Type = "TextFile"})
-                .Union(repository.Get<ImageFile>(new Specification<ImageFile>(i => true)).Select(i => new { i.Title, Type = "ImageFile" }))
-                .Union(repository.Get<AudioFile>(new Specification<AudioFile>(i => true)).Select(i => new { i.Title, Type = "AudioFile" }))
-                .Union(repository.Get<VideoFile>(new Specification<VideoFile>(i => true)).Select(i => new { i.Title, Type = "VideoFile" }))
-                .GroupBy(i => i.Type).Select( i => new { Key = i.Key, Amount = i.Count() }).ToList();
+            var files = ( await repository.GetAsync<TextFile>(new Specification<TextFile>(i => true))).Select(i => new { i.Title, Type = "TextFile"})
+                .Union((await repository.GetAsync<ImageFile>(new Specification<ImageFile>(i => true))).Select(i => new { i.Title, Type = "ImageFile" }))
+                .Union((await repository.GetAsync<AudioFile>(new Specification<AudioFile>(i => true))).Select(i => new { i.Title, Type = "AudioFile" }))
+                .Union((await repository.GetAsync<VideoFile>(new Specification<VideoFile>(i => true))).Select(i => new { i.Title, Type = "VideoFile" }))
+                .GroupBy(i => i.Type).Select( i => new { i.Key, Amount = i.Count() }).ToList();
             StringBuilder @string = new StringBuilder();
             @string.AppendLine("|Type of File\t|Amount\t|");
             foreach (var item in files)
@@ -52,49 +48,29 @@ namespace EF_Practise
             return @string.ToString();
         }
 
-        public string GetTotalNumberOfFiles(int directoryId, int userId)
+        public async Task<FilesAmountDTO> GetTotalNumberOfFilesAsync(int directoryId, int userId)
         {
-            var dir = repository.Find<Directory>(new Specification<Directory>(i => i.Id == directoryId));
+            var dir = await repository.FindAsync<Directory>(new Specification<Directory>(i => i.Id == directoryId));
             var specificationForFile = new Specification<File>(i => i.DirectoryId == directoryId);
-            GetFiles(dir);
-            var files = repository.Get<File>(specificationForFile);
-            var filesForUser = repository.Get<FilePermission>(new Specification<FilePermission>(i => i.UserId == userId && i.CanRead && i.CanWrite)).Select(i => i.FileId).Where(i => files.Select(i => i.Id).Contains(i)).Count();
-            return $"Files: {files.Count()} For user: {filesForUser}";
+            await GetFiles(dir);
+            var files =await  repository.GetAsync<File>(specificationForFile);
+            var filesForUser = (await repository.GetAsync<FilePermission>(new Specification<FilePermission>(i => i.UserId == userId && i.CanRead && i.CanWrite))).Select(i => i.FileId).Where(i => files.Select(i => i.Id).Contains(i)).Count();
+            return new FilesAmountDTO { ForUser = filesForUser, Total = files.Count()};
 
-            void GetFiles(Directory directory)
+            async Task GetFiles(Directory directory)
             {
                 if (directory is null)
                 {
                     return;
                 }
                 specificationForFile = specificationForFile.Or(new Specification<File>(i => i.DirectoryId == directory.Id));
-                var dirNext = repository.Get<Directory>(new Specification<Directory>(i => i.ParentDirectoryId == directory.Id));
+                var dirNext = await repository.GetAsync<Directory>(new Specification<Directory>(i => i.ParentDirectoryId == directory.Id));
                 foreach (var item in dirNext)
                 {
-                    GetFiles(item);
+                   await GetFiles(item);
                 }
 
             }
         }
-
-        public IQueryable<int> GetRestrictDirectories(int userId)
-        {
-            return repository.Get<DirectoryPermission>(new Specification<DirectoryPermission>(i => !i.CanRead && !i.CanWrite && userId == i.UserId))
-                           .Select(i => i.DirectoryId);
-        }
-
-        public IQueryable<int> GetRestrictFiles(int userId)
-        {
-            var restrictCatalogFile = repository.Get<File>(
-                        new Specification<File>(j =>
-                            GetRestrictDirectories(userId)
-                           .Contains(j.DirectoryId)
-                    )).Select(i => i.Id);
-            var restrictFiles = repository.Get<FilePermission>(new Specification<FilePermission>(i => i.CanRead && i.CanWrite && userId == i.UserId))
-                .Select(i => i.FileId);
-
-            return restrictCatalogFile.Except(restrictFiles);
-        }
-
     }
 }

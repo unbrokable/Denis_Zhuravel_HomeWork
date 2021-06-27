@@ -16,24 +16,11 @@ namespace EF_Practise.Data
         public DbSet<TextFile> TextFiles { get; set; }
         public DbSet<VideoFile> VideoFiles { get; set; }
 
-        public ApplicationContext()
-        {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
-        }
-
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
            : base(options)
         {
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("data source=localhost;initial catalog=EF_Practise;Trusted_Connection=True;multipleactiveresultsets=True;");
-            }
-
+            Database.EnsureDeleted();
+            Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

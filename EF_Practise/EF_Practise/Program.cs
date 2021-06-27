@@ -1,38 +1,39 @@
 ﻿using EF_Practise.Data;
 using EF_Practise.Data.Entities;
+using EF_Practise.DTOs;
 using EF_Practise.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EF_Practise
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var container = Startup.ConfigureService();
             SetData((ApplicationContext)container.GetService(typeof(ApplicationContext)));
             var fileService = (IFileService)container.GetService(typeof(IFileService));
             var directoryService = (IDirectoryService)container.GetService(typeof(IDirectoryService));
-            var res = fileService.GetAvailableFileReadInDirectory(1, 1);
 
             Console.WriteLine("Task 5");
-            foreach (File item in fileService.GetAvailableFileReadInDirectory(1, 1))
+            foreach (FileDTO item in await fileService.GetAvailableFileReadInDirectoryAsync(1, 1))
             {
-                Console.WriteLine(item.Title);
+                Console.WriteLine(item.Name);
             }
             Console.WriteLine("Task 6");
-            Console.WriteLine(directoryService.GetFilesAndDirectories(1,1));
+            Console.WriteLine(await directoryService.GetFilesAndDirectoriesAsync(1,1));
             Console.WriteLine("Task 7");
-            foreach (var item in fileService.GetFullPathOfFiles(4))
+            foreach (var item in await fileService.GetFullPathOfFilesAsync(4))
             {
                 Console.WriteLine(item);
             }
             
             Console.WriteLine("Task 9");
-            Console.WriteLine(directoryService.GetTotalNumberOfFiles(1,1));
+            Console.WriteLine(await directoryService.GetTotalNumberOfFilesAsync(1, 1));
             Console.WriteLine("Task 10");
-            Console.WriteLine(directoryService.GetReportDistinctFiles());
+            Console.WriteLine(await directoryService.GetReportDistinctFilesAsync());
             Console.ReadKey();
         }
         static public void SetData(ApplicationContext context)

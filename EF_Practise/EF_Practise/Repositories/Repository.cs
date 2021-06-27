@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EF_Practise.Repositories
 {
@@ -16,15 +17,15 @@ namespace EF_Practise.Repositories
             this.context = context;
         }
 
-        public T Find<T>(Specification<T> specification) where T : class, new()
+        public async Task<T> FindAsync<T>(Specification<T> specification) where T : class, new()
         {
            
-            return context.Set<T>().FirstOrDefault(specification.Expression);
+            return await context.Set<T>().FirstOrDefaultAsync(specification.Expression);
         }
 
-        public IQueryable<T> Get<T>(Specification<T> specification) where T : class, new()
+        public Task<IQueryable<T>> GetAsync<T>(Specification<T> specification) where T : class, new()
         {
-            return context.Set<T>().Where(specification.Expression);
+            return Task.FromResult(context.Set<T>().Where(specification.Expression));
         }
 
     }
