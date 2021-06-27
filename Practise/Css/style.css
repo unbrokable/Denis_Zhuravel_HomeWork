@@ -7,12 +7,19 @@ table{
     height: 100px;
     text-align: center;
 }
+.left-td{
+    text-align: left;
+}
+td{
+    border: 3px solid black;
+} 
 .site-header{
     color: red;
     margin-left:50% ;
 }
 .big-language{
-    font-size: 24;
+    font-size: 13pt ;
+    font-weight: bold;
     color: red;
     text-transform: uppercase; 
 }
@@ -63,8 +70,9 @@ table{
     font-weight: bold;
 }
 .item-menu{
-    padding: 5px;
-    background-color: lime;
+    font-size: 15px;
+    padding-left: 5px;
+    background-color: green;
     margin-bottom: 5px;
 }
 
