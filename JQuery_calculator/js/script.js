@@ -4,12 +4,12 @@ $(window).on('load',function(){
         let curValue = $("input[type=text]").val();
         let changeValue = setRightCalculatorValue(curValue, $(this).attr("value"));
         $("input[type=text]").val(changeValue);
-        $(".result").empty().append(Calculate(changeValue));
+        $(".result").empty().append(calculate(changeValue));
     });
 
     $("input[value='=']").click(function(){
         var curValue = $("input[type=text]").val();
-        $(".result").empty().append(Calculate(curValue));
+        $(".result").empty().append(calculate(curValue));
     });
   });
 
@@ -36,7 +36,7 @@ function setRightCalculatorValue(cur, value){
     return cur + value;
 }
 
-function Calculate(str){
+function calculate(str){
     try{
         while(str.includes(divideSymbol ) || str.includes(multiplySymbol)){
             if((str.indexOf(divideSymbol ) < str.indexOf(multiplySymbol) || str.indexOf(multiplySymbol) === -1) && str.indexOf(divideSymbol ) != -1){
@@ -95,12 +95,12 @@ function getResult(str,sym){
         fromEndIndexMin = fromEndIndexMin+1;
     }
     let subResult = str.slice(fromEndIndexMin, fromStarIndexMax == 0?str.length: fromStarIndexMax);
-    let result = ChooseOperation(subResult,sym,index - str.indexOf(subResult));
+    let result = chooseOperation(subResult,sym,index - str.indexOf(subResult));
     str = str.replace(subResult,result);
     return str;
 }
 
-function ChooseOperation(str, sym, index){
+function chooseOperation(str, sym, index){
     let first = Number.parseFloat(str.substr(0, index));
     let second = Number.parseFloat(str.substr(index+1));
     if(sym === plusSymbol){
