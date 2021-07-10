@@ -1,0 +1,26 @@
+.btn{
+    margin: 1px;
+}
+.result{
+    display: flex;
+
+    align-items: center;
+}
+.container{
+    width: 600px;
+}
+h1{
+    text-align: center;
+  }
+
+*{
+    margin: 0;
+    padding: 0;
+ }
+  .header{
+    background-color: #81C784;
+    padding: 10px;
+    color: #fff;
+    text-align: center;
+  }
+
