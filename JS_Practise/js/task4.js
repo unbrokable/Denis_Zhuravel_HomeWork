@@ -1,0 +1,1 @@
+document.writeln(window.location.href);
